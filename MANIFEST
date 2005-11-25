@@ -1,0 +1,7 @@
+Changes
+Makefile.PL
+MANIFEST
+README
+t/Net-Telnet-Cisco-IOS.t
+lib/Net/Telnet/Cisco/IOS.pm
+META.yml                                 Module meta-data (added by MakeMaker)
