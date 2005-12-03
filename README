@@ -6,7 +6,6 @@ To install this module type the following:
 
    perl Makefile.PL
    make
-   make test
    make install
 
 DEPENDENCIES
@@ -14,6 +13,8 @@ DEPENDENCIES
 This module requires these other modules and libraries:
 
   Net::Telnet::Cisco
+
+Please note that "make test" is broken.  Please ignore any test errors you receive until I figure out what I'm talking about.
 
 COPYRIGHT AND LICENCE
 

@@ -1,3 +1,12 @@
+0.5beta:
+*  Added "route" option in getIPRoute
+*  Added method "privLevel"
+*  Added method "getNTP"
+*  Added "use strict" and "use vars" for portability
+*  Added more comments in the code
+*  Fixed return values of getCPU() when something goes wrong
+*  Added Loopback interface harmonizing
+
 0.4beta:
 *  Fixed getIntACL issue with uninitialized value.
 *  Removed whitespace from interfaces returned by harmonizeInts().
