@@ -33,7 +33,7 @@ use vars qw($AUTOLOAD @ISA $VERSION $DEBUG);
 #  Declare ourselves a child of Net::Telnet::Cisco
 @ISA        = qw(Net::Telnet::Cisco);
 #  Keep the version number
-$VERSION    = "0.5beta";
+$VERSION    = "0.6beta";
 
 #  Constructor
 sub new  {
@@ -160,20 +160,19 @@ sub listVLANs  {
 #  Priv 1
 sub getIntState  {
         my ( $self, @args ) = @_;
-	my %result;
+        my %result;
         my $if = &harmonizeInts( $args[0] );
         my $cmd = "sh interface " . $if;
         my @output = $self->cmd( $cmd );
 
         foreach my $line ( @output )  {
                 if ( $line =~ /$if is (.+), line protocol is (.+) / )  {
-			$result{'port'} = $1;
-			$result{'lineprotocol'} = $2;
-			return %result;
+                        $result{'port'} = $1;
+                        $result{'lineprotocol'} = $2;
                 }  else  { }
         }
-
-}
+        return %result;
+}   
 
 #  Priv 1
 sub getIntDesc  {
@@ -310,18 +309,19 @@ sub findVLAN  {
         my $if = &harmonizeInts( $args[0] );
         my $cmd = "sh interface " . $if . " status";
         my @result = $self->cmd( $cmd );
+	my $vlan = undef;
 
         foreach my $line ( @result )  {
 		if ( $line =~ /^Port/ )  { }
 		elsif ( $line =~ /^-----/ )  { }
 		elsif ( $line =~ /^\s+/ )  { }
                 else  {
-			my $vlan = substr( $line, 40, 8 );
-			$vlan =~ s/\s+$//g;
+			$vlan = substr( $line, 40, 8 );
+			$vlan =~ s/\s+//g;
 			return $vlan;
 		}
         }
-        return 0;
+        return $vlan;
 }
 
 #  Priv 15
@@ -624,6 +624,9 @@ sub harmonizeInts  {
 	my @POS = qw(POS P);
 	my @VLAN = qw(VLAN VL V);
 	my @LOOPBACK = qw(Loopback Loop Lo);
+	my @ATM = qw(ATM AT A);
+	my @DIALER = qw(Dialer Dial Di D);
+	my @VIRTUALACCESS = qw(Virtual-Access Virtual-A Virtual Virt);
 	IFS:
 	{
 		#  Go through the array @FastEthernet
@@ -738,6 +741,48 @@ sub harmonizeInts  {
                                 last IFS;
                         }
                 }
+                # Go through the array @ATM
+                foreach my $atm ( @ATM )
+                {
+                        #  If the user's input matches
+                        if ( $input =~ /^$atm\d/i )
+                        {
+                                #  Take the number part out
+                                $input =~ /^$atm(.+)\b/i;
+                                #  Reset $val to the long name + number
+                                $input = "ATM" . $1;
+                                #  Leave the block because we found it
+                                last IFS;
+                        }
+                }
+                # Go through the array @DIALER
+                foreach my $dialer ( @DIALER )
+                {
+                        #  If the user's input matches
+                        if ( $input =~ /^$dialer\d/i )
+                        {
+                                #  Take the number part out
+                                $input =~ /^$dialer(.+)\b/i;
+                                #  Reset $val to the long name + number
+                                $input = "Dialer" . $1;
+                                #  Leave the block because we found it
+                                last IFS;
+                        }
+                }
+                # Go through the array @VIRTUALACCESS
+                foreach my $virt ( @VIRTUALACCESS )
+                {
+                        #  If the user's input matches
+                        if ( $input =~ /^$virt\d/i )
+                        {
+                                #  Take the number part out
+                                $input =~ /^$virt(.+)\b/i;
+                                #  Reset $val to the long name + number
+                                $input = "Virtual-Access" . $1;
+                                #  Leave the block because we found it
+                                last IFS;
+                        }
+                }
 		#  Since we didn't find it, set $input to 0
 		return 0;
 	}  #  IFS
@@ -746,8 +791,6 @@ sub harmonizeInts  {
 }
 
 1;
-
-
 =head1 NAME
 
 Net::Telnet::Cisco::IOS -- Manage Cisco IOS Devices

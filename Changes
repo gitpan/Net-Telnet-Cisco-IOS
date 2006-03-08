@@ -1,3 +1,9 @@
+0.6beta
+*  Fixed uninitialized issue with getIntState()
+*  Fixed regex issue with findVLAN()
+*  Fixed return values with findVLAN()
+*  Added ATM, Dialer, and VirtualAccess interfaces to harmonizeInts() ( Thanks, Luca! )
+
 0.5beta:
 *  Added "route" option in getIPRoute
 *  Added method "privLevel"
